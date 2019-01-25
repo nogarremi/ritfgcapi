@@ -9,6 +9,7 @@ app.get('/players', service.getPlayers);
 app.get('/games', service.getGames);
 app.get('/results', service.getAllResults);
 
+//testing something
 app.listen(port, () =>{
     console.log("Listening on port " + port);
 })
