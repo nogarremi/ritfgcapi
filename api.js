@@ -8,6 +8,7 @@ const port = 8443
 app.get('/players', service.getPlayers);
 app.get('/games', service.getGames);
 app.get('/results', service.getAllResults);
+app.get('/results/:game_ID', service.GetGameTopThreeResults);
 
 //listen on port ending in 443 because of https
 app.listen(port, () =>{

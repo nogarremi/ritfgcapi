@@ -3,6 +3,8 @@ var players = seq.import('../models/players');
 var games = seq.import('../models/games');
 var results = seq.import('../models/results');
 
+results.belongsTo(games, {foreignKey: 'game_ID'});
+results.belongsTo(players, {foreignKey: 'player_ID'});
 exports.getPlayers = function(req, res) {
     players.findAll()
     .then(p => {
@@ -44,6 +46,41 @@ exports.getAllResults = function(req, res) {
 
         return res.status(200).send({
             results: r
+        })
+    })
+}
+
+exports.GetGameTopThreeResults = function(req, res) {
+    results.findAll({
+        where: {
+            game_ID: req.params.game_ID
+        },
+        include: [games, players]
+    }).then(r => {
+        if(!r) {
+            return res.status(400).send({
+                message: "No results found!"
+            })
+        }
+        var totals = {};
+        r.forEach(item => {
+            if(totals[item.player.player_Handle] == null) {
+                totals[item.player.player_Handle] = item.ranbat_score;
+            }
+            else {
+                totals[item.player.player_Handle] = totals[item.player.player_Handle] + item.ranbat_score;
+            }
+        })
+        
+        var keys_sorted = Object.keys(totals).sort(function(a,b){return totals[b]-totals[a]})
+
+        var final_obj = {};
+        keys_sorted.forEach(key => {
+            final_obj[key] = totals[key];
+        })
+
+        return res.status(200).send({
+            results: final_obj
         })
     })
 }
