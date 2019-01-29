@@ -8,8 +8,8 @@ const nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 var config = require('../config');
 
-//var email_path = './views/email_template.html'
-var email_path = '/home/ec2-user/api/ritfgcapi/views/email_template.html'
+var email_path = './views/email_template.html'
+//var email_path = '/home/ec2-user/api/ritfgcapi/views/email_template.html'
 
 results.belongsTo(games, {foreignKey: 'game_ID'});
 results.belongsTo(players, {foreignKey: 'player_ID'});
@@ -94,6 +94,9 @@ exports.GetGameTopThreeResults = function(req, res) {
 }
 
 exports.sendEmail = function(req, res) {
+
+    console.log(req.body);
+
     var name = req.body.name;
     var email = req.body.email;
     var comment = req.body.comment;
@@ -115,8 +118,8 @@ exports.sendEmail = function(req, res) {
     }));
 
     var mailOptions = {
-        from: email,
-        to: 'jgreaves62@gmail.com',
+        from: 'jgreaves62@gmail.com',
+        to: 'ritfgc@gmail.com',
         subject: 'RIT FGC Contact Message',
         html: getHtmlMessage(model)
     };
