@@ -9,9 +9,13 @@
   "author": "Jason Greaves",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "moment": "^2.24.0",
     "mysql2": "^1.6.4",
-    "sequelize": "^4.42.0"
+    "nodemailer": "^5.1.1",
+    "nodemailer-smtp-transport": "^2.7.4",
+    "sequelize": "^4.42.0",
+    "underscore": "^1.9.1"
   }
 }

@@ -2,6 +2,14 @@ var seq = require('../models/seq');
 var players = seq.import('../models/players');
 var games = seq.import('../models/games');
 var results = seq.import('../models/results');
+var _ = require('underscore');
+var fs = require('fs');
+const nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+var config = require('../config');
+
+//var email_path = './views/email_template.html'
+var email_path = '/home/ec2-user/api/ritfgcapi/views/email_template.html'
 
 results.belongsTo(games, {foreignKey: 'game_ID'});
 results.belongsTo(players, {foreignKey: 'player_ID'});
@@ -84,3 +92,56 @@ exports.GetGameTopThreeResults = function(req, res) {
         })
     })
 }
+
+exports.sendEmail = function(req, res) {
+    var name = req.body.name;
+    var email = req.body.email;
+    var comment = req.body.comment;
+
+    var model = {
+        name: name,
+        email: email,
+        comment: comment
+    }
+
+    var transporter = nodemailer.createTransport(smtpTransport({
+        host: 'email-smtp.us-east-1.amazonaws.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: config.smtp_user,
+            pass: config.smtp_pass
+        }
+    }));
+
+    var mailOptions = {
+        from: email,
+        to: 'jgreaves62@gmail.com',
+        subject: 'RIT FGC Contact Message',
+        html: getHtmlMessage(model)
+    };
+
+    transporter.sendMail(mailOptions, function(err, info) {
+        if(err) {
+            console.log(err);
+            return err;
+        }
+
+        console.log(info.response);
+        return res.status(200).send({
+            message: info.response
+        })
+    });
+
+}
+
+function getHtmlMessage(model) {
+    var html = fs.readFileSync(email_path, 'utf8');
+    var template = _.template(html);
+
+    return template(model);
+}
+
+_.templateSettings = {
+    interpolate: /\{\{(.+?)\}\}/g
+};
