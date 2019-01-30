@@ -1,6 +1,7 @@
 var express = require('express');
 const https = require('https');
 var config = require('./config');
+var fs = require('fs');
 var bodyParser = require('body-parser')
 var service = require('./services/APIService');
 
