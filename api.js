@@ -9,10 +9,10 @@ var service = require('./services/APIService');
 const app = express()
 const port = 443
 
-var private_key = fs.readFileSync('/home/ec2-user/ia.key', 'utf8');
-var cert = fs.readFileSync('/home/ec2-user/ia.crt', 'utf8');
-var ca = fs.readFileSync('/home/ec2-user/ca.crt', 'utf8');
-var creds = {key: private_key, cert: cert, ca: ca};
+var private_key = fs.readFileSync('/home/ec2-user/privkey.pem', 'utf8');
+var cert = fs.readFileSync('/home/ec2-user/cert.pem', 'utf8');
+//var ca = fs.readFileSync('/home/ec2-user/ca.crt', 'utf8');
+var creds = {key: private_key, cert: cert};
 var http_server = https.createServer(creds, app);
 
 app.use(bodyParser.json({limit: '50mb', extended: true}));
