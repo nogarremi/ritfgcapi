@@ -11,7 +11,7 @@ const port = 443
 
 var private_key = fs.readFileSync('/home/ec2-user/privkey.pem', 'utf8');
 var cert = fs.readFileSync('/home/ec2-user/cert.pem', 'utf8');
-//var ca = fs.readFileSync('/home/ec2-user/ca.crt', 'utf8');
+var ca = fs.readFileSync('/home/ec2-user/chain.pem', 'utf8');
 var creds = {key: private_key, cert: cert};
 var http_server = https.createServer(creds, app);
 
