@@ -1,24 +1,15 @@
-var express = require('express');
-const https = require('https');
+const express = require('express');
+const serverless = require('serverless-http');
+const fs = require('fs');
+const bodyParser = require('body-parser')
 var config = require('./config');
-var fs = require('fs');
-var bodyParser = require('body-parser')
 var service = require('./services/APIService');
 
-
 const app = express()
-const port = 443
-
-var private_key = fs.readFileSync('/home/ec2-user/privkey.pem', 'utf8');
-var cert = fs.readFileSync('/home/ec2-user/cert.pem', 'utf8');
-var ca = fs.readFileSync('/home/ec2-user/chain.pem', 'utf8');
-var creds = {key: private_key, cert: cert};
-var http_server = https.createServer(creds, app);
 
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
 
-//Handling pre-flight requests
 app.use(function(req, res, next){
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
@@ -34,10 +25,7 @@ app.use(function(req, res, next){
 app.get('/players', service.getPlayers);
 app.get('/games', service.getGames);
 app.get('/results', service.getAllResults);
-app.get('/results/:game_ID', service.GetGameTopThreeResults);
-app.post('/email', service.sendEmail);
+app.get('/results/:semester_ID/', service.getSemesterResults)
+app.get('/results/:semester_ID/:game_ID', service.getTopThreeResults);
 
-//listen on port ending in 443 because of https
-http_server.listen(port, () =>{
-    console.log("Listening on port " + port);
-})
+module.exports.handler = serverless(app);

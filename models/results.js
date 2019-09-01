@@ -6,6 +6,14 @@ module.exports = function(sequelize, DataTypes) {
         primaryKey: true,
         autoIncrement: true
       },
+	   semester_ID: {
+        type: DataTypes.INTEGER(8).ZEROFILL.UNSIGNED,
+        allowNull: false,
+        references: {
+          model: 'semesters',
+          key: 'semester_ID'
+        }
+      },
       game_ID: {
         type: DataTypes.INTEGER(8).ZEROFILL.UNSIGNED,
         allowNull: false,
