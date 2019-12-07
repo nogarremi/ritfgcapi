@@ -10,6 +10,10 @@ module.exports = function(sequelize, DataTypes) {
         type: DataTypes.STRING(32),
         allowNull: false
       },
+      challonge_game_id: {
+        type: DataTypes.INTEGER(8).UNSIGNED,
+        allowNull: false
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: true,
