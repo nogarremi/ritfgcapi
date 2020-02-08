@@ -6,28 +6,12 @@ module.exports = function(sequelize, DataTypes) {
         primaryKey: true,
         autoIncrement: true
       },
-	   semester_ID: {
+      placement_ID: {
         type: DataTypes.INTEGER(8).ZEROFILL.UNSIGNED,
         allowNull: false,
         references: {
-          model: 'semesters',
-          key: 'semester_ID'
-        }
-      },
-      game_ID: {
-        type: DataTypes.INTEGER(8).ZEROFILL.UNSIGNED,
-        allowNull: false,
-        references: {
-          model: 'games',
-          key: 'game_ID'
-        }
-      },
-      player_ID: {
-        type: DataTypes.INTEGER(8).ZEROFILL.UNSIGNED,
-        allowNull: false,
-        references: {
-          model: 'players',
-          key: 'player_ID'
+          model: 'placement',
+          key: 'placement_ID'
         }
       },
       ranbat_score: {
