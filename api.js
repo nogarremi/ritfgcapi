@@ -25,7 +25,7 @@ app.use(function(req, res, next){
 app.get('/players', service.getPlayers);
 app.get('/games', service.getGames);
 app.get('/results', service.getAllResults);
-app.get('/results/:semester_ID/', service.getSemesterResults)
+app.get('/results/:semester_ID/', service.getSemesterResults);
 app.get('/results/:semester_ID/:game_ID', service.getTopThreeResults);
 app.get('/results/:semester_ID/:game_ID/:player_ID', service.getPlacementResults);
 

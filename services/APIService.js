@@ -1,8 +1,8 @@
 var seq = require('../models/seq');
-var players = seq.import('../models/players');
-var games = seq.import('../models/games');
-var placements = seq.import('../models/placements');
 var semesters = seq.import('../models/semesters');
+var games = seq.import('../models/games');
+var players = seq.import('../models/players');
+var placements = seq.import('../models/placements');
 var results = seq.import('../models/results');
 var _ = require('underscore');
 var fs = require('fs');
@@ -58,10 +58,13 @@ exports.getAllResults = function(req, res) {
 }
 
 exports.getSemesterResults = function(req, res) {
-        results.findAll({
-        where: {
-            semester_ID: req.params.semester_ID
-        }
+    results.findAll({
+        include:[{
+            model: placements,
+            where: {
+                semester_ID: req.params.semester_ID
+            }
+        }]
     }).then(r => {
         if(!r) {
             return res.status(400).send({
@@ -78,31 +81,35 @@ exports.getSemesterResults = function(req, res) {
 exports.getPlacementResults = function(req, res) {
     placements.findAll({
         where: {
-            semester_ID: req.params.semester_ID
-            game_ID: req.params.game_ID
+            semester_ID: req.params.semester_ID,
+            game_ID: req.params.game_ID,
             player_ID: req.params.player_ID
-        },
-        include: [games, players]
-    }).then(r => {
-        if(!r) {
+        }
+    }).then(p => {
+        if(!p) {
             return res.status(400).send({
                 message: "No results found!"
             })
         }
 
         return res.status(200).send({
-            results: r
+            placements: p
         })
     })
 }
 
 exports.getTopThreeResults = function(req, res) {
     results.findAll({
-        where: {
-            semester_ID: req.params.semester_ID,
-            game_ID: req.params.game_ID
-        },
-        include: [placements, games, players]
+        include:{
+            model: placements,
+            where: {
+                semester_ID: req.params.semester_ID,
+                game_ID: req.params.game_ID
+            },
+            include:{
+                model: players
+            }
+        }
     }).then(r => {
         if(!r) {
             return res.status(400).send({
@@ -110,20 +117,28 @@ exports.getTopThreeResults = function(req, res) {
             })
         }
         var totals = {};
+        var placements = {};
         r.forEach(item => {
-            if(totals[item.player.player_Handle] == null) {
-                totals[item.player.player_Handle] = item.ranbat_score;
+            if(totals[item.placement.player.player_Handle] == null) {
+                totals[item.placement.player.player_Handle] = item.ranbat_score;
             }
             else {
-                totals[item.player.player_Handle] = totals[item.player.player_Handle] + item.ranbat_score;
+                totals[item.placement.player.player_Handle] = totals[item.placement.player.player_Handle] + item.ranbat_score;
             }
+            
+            var places = [item.placement.tour_1, item.placement.tour_2, item.placement.tour_3, item.placement.tour_4, item.placement.tour_5, item.placement.tour_6, item.placement.tour_7, item.placement.tour_8, item.placement.tour_9, item.placement.tour_10, item.placement.tour_11, item.placement.tour_12, item.placement.tour_13, item.placement.tour_14, item.placement.tour_15, item.placement.tour_16];
+            
+            var places_clean = places.filter(function(e){return e})
+            var avg_place = places_clean.reduce((a, b) => (a + b)) / places_clean.length;
+            
+            placements[item.placement.player.player_Handle] = [places, avg_place];
         })
         
         var keys_sorted = Object.keys(totals).sort(function(a,b){return totals[b]-totals[a]})
 
         var final_obj = {};
         keys_sorted.forEach(key => {
-            final_obj[key] = totals[key];
+            final_obj[key] = [totals[key], placements[key]];
         })
 
         return res.status(200).send({
