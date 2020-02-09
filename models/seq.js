@@ -1,6 +1,7 @@
 const config = require("../config.js");
 var Sequelize = require('sequelize');
 
+// This is our connection to the database
 var seq = new Sequelize('ranbats', config.db_user, config.db_pass, {
     host: 'ranbats.c8qmgiwmriq2.us-east-1.rds.amazonaws.com',
     port: 3306,

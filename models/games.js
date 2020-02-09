@@ -1,3 +1,5 @@
+// There's not much to this
+// It's the games SQL table sequelized
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define('games', {
         game_ID: {

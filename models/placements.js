@@ -1,3 +1,5 @@
+// There's not much to this
+// It's the placements SQL table sequelized
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define('placements', {
       placement_ID: {
