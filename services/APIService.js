@@ -122,13 +122,11 @@ exports.getPlacementResults = function(req, res) {
 exports.getTopThreeResults = function(req, res) {
     // This is basically a sql statement
     /* 
-     * SELECT * FROM results INNER JOIN placements ON placements.placement_ID = results.placement_ID
-     * INNER JOIN players ON players.player_ID = placements.player_ID
+     * SELECT * FROM plaecments INNER JOIN players ON players.player_ID = placements.player_ID
      * WHERE placements.semester_ID = %s AND placements.game_ID = %s;
      */
-    results.findAll({
+    placements.findAll({
         include:{
-            model: placements,
             where: {
                 semester_ID: req.params.semester_ID,
                 game_ID: req.params.game_ID
@@ -149,22 +147,22 @@ exports.getTopThreeResults = function(req, res) {
         // forEach result get the ranbat points and placements
         r.forEach(item => {
             // IDK Jason should write a comment here
-            if(totals[item.placement.player.player_Handle] == null) {
-                totals[item.placement.player.player_Handle] = item.ranbat_score;
+            if(totals[item.player.player_Handle] == null) {
+                totals[item.player.player_Handle] = item.ranbat_score;
             }
             else {
-                totals[item.placement.player.player_Handle] = totals[item.placement.player.player_Handle] + item.ranbat_score;
+                totals[item.player.player_Handle] = totals[item.player.player_Handle] + item.ranbat_score;
             }
             
             // All the tournament placements
-            var places = [item.placement.tour_1, item.placement.tour_2, item.placement.tour_3, item.placement.tour_4, item.placement.tour_5, item.placement.tour_6, item.placement.tour_7, item.placement.tour_8, item.placement.tour_9, item.placement.tour_10, item.placement.tour_11, item.placement.tour_12, item.placement.tour_13, item.placement.tour_14, item.placement.tour_15, item.placement.tour_16];
+            var places = [item.tour_1, item.tour_2, item.tour_3, item.tour_4, item.tour_5, item.tour_6, item.tour_7, item.tour_8, item.tour_9, item.tour_10, item.tour_11, item.tour_12, item.tour_13, item.tour_14, item.tour_15, item.tour_16];
             
             // Remove the nulls
             var places_clean = places.filter(function(e){return e});
             // Averages the version with the no nulls
             var avg_place = places_clean.reduce((a, b) => (a + b)) / places_clean.length;
             
-            placements[item.placement.player.player_Handle] = [places, avg_place];
+            placements[item.player.player_Handle] = [places, avg_place];
         })
         
         // Sorts the points

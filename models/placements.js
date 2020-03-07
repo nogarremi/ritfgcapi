@@ -32,6 +32,10 @@ module.exports = function(sequelize, DataTypes) {
           key: 'player_ID'
         }
       },
+      ranbat_score: {
+        type: DataTypes.INTEGER(8).ZEROFILL.UNSIGNED,
+        allowNull: false
+      },
       tour_1: {
         type: DataTypes.INTEGER(3),
         allowNull: true
