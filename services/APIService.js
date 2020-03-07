@@ -3,13 +3,11 @@ var semesters = seq.import('../models/semesters'); // Sequelized version of seme
 var games = seq.import('../models/games'); // Sequelized version of semesters
 var players = seq.import('../models/players'); // Sequelized version of players
 var placements = seq.import('../models/placements'); // Sequelized version of placements
-var results = seq.import('../models/results'); // Sequelized version of resutls
 var _ = require('underscore'); // IDK Jason should write a comment here
 var fs = require('fs'); // IDK Jason should write a comment here
 var config = require('../config'); // This is our super secret info
 
 // Our connections between the tables
-results.belongsTo(placements, {foreignKey: 'placement_ID'});
 placements.belongsTo(games, {foreignKey: 'game_ID'});
 placements.belongsTo(players, {foreignKey: 'player_ID'});
 placements.belongsTo(semesters, {foreignKey: 'semester_ID'});
@@ -49,12 +47,12 @@ exports.getGames = function(req, res) {
     })
 }
 
-// Get all the results
+// Get all the placements
 exports.getAllResults = function(req, res) {
-    // SELECT * FROM results
-    results.findAll()
-    .then(r => {
-        if(!r) {
+    // SELECT * FROM placements
+    placements.findAll()
+    .then(p => {
+        if(!p) {
             return res.status(400).send({
                 message: "No Games found!"
             })
@@ -62,21 +60,18 @@ exports.getAllResults = function(req, res) {
 
         // Send data as is
         return res.status(200).send({
-            results: r
+            placements: p
         })
     })
 }
 
 // Get results based on the semester
 exports.getSemesterResults = function(req, res) {
-    // SELECT * FROM results INNER JOIN placements ON placements.placements.placement_ID = results.placement_ID
-    results.findAll({
-        include:[{
-            model: placements,
-            where: {
-                semester_ID: req.params.semester_ID
-            }
-        }]
+    // SELECT * FROM placements WHERE placements.semester_ID = %s;
+    placements.findAll({
+        where: {
+            semester_ID: req.params.semester_ID
+        }
     }).then(r => {
         if(!r) {
             return res.status(400).send({
@@ -126,17 +121,15 @@ exports.getTopThreeResults = function(req, res) {
      * WHERE placements.semester_ID = %s AND placements.game_ID = %s;
      */
     placements.findAll({
+        where: {
+            semester_ID: req.params.semester_ID,
+            game_ID: req.params.game_ID
+        },
         include:{
-            where: {
-                semester_ID: req.params.semester_ID,
-                game_ID: req.params.game_ID
-            },
-            include:{
-                model: players
-            }
+            model: players
         }
-    }).then(r => {
-        if(!r) {
+    }).then(p => {
+        if(!p) {
             return res.status(400).send({
                 message: "No results found!"
             })
@@ -145,7 +138,7 @@ exports.getTopThreeResults = function(req, res) {
         var placements = {}; // Map for everyting else, so that the sorting doesn't mess up
         
         // forEach result get the ranbat points and placements
-        r.forEach(item => {
+        p.forEach(item => {
             // IDK Jason should write a comment here
             if(totals[item.player.player_Handle] == null) {
                 totals[item.player.player_Handle] = item.ranbat_score;
@@ -176,7 +169,7 @@ exports.getTopThreeResults = function(req, res) {
 
         // Send the data out
         return res.status(200).send({
-            results: final_obj
+            placements: final_obj
         })
     })
 }
