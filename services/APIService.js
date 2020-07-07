@@ -3,7 +3,7 @@ var semesters = seq.import('../models/semesters'); // Sequelized version of seme
 var games = seq.import('../models/games'); // Sequelized version of semesters
 var players = seq.import('../models/players'); // Sequelized version of players
 var placements = seq.import('../models/placements'); // Sequelized version of placements
-var results = seq.import('../models/results'); // Sequelized version of resutls
+var results = seq.import('../models/results'); // Sequelized version of results
 var _ = require('underscore'); // IDK Jason should write a comment here
 var fs = require('fs'); // IDK Jason should write a comment here
 var config = require('../config'); // This is our super secret info
@@ -51,10 +51,10 @@ exports.getGames = function(req, res) {
 
 // Get all the results
 exports.getAllResults = function(req, res) {
-    // SELECT * FROM results
-    results.findAll()
-    .then(r => {
-        if(!r) {
+    // SELECT * FROM placements
+    placements.findAll()
+    .then(p => {
+        if(!p) {
             return res.status(400).send({
                 message: "No Games found!"
             })
@@ -62,23 +62,20 @@ exports.getAllResults = function(req, res) {
 
         // Send data as is
         return res.status(200).send({
-            results: r
+            placements: p
         })
     })
 }
 
 // Get results based on the semester
 exports.getSemesterResults = function(req, res) {
-    // SELECT * FROM results INNER JOIN placements ON placements.placements.placement_ID = results.placement_ID
-    results.findAll({
-        include:[{
-            model: placements,
-            where: {
-                semester_ID: req.params.semester_ID
-            }
-        }]
-    }).then(r => {
-        if(!r) {
+    // SELECT * FROM placements WHERE placements.semester_ID = %s
+    placements.findAll({
+        where: {
+            semester_ID: req.params.semester_ID
+        }
+    }).then(p => {
+        if(!p) {
             return res.status(400).send({
                 message: "No results found!"
             })
@@ -86,7 +83,7 @@ exports.getSemesterResults = function(req, res) {
         
         // Send data as is
         return res.status(200).send({
-            results: r
+            placements: p
         })
     })
 }
